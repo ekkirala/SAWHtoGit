@@ -38,7 +38,7 @@ Assuming you've already got Git installed on your system, open up a Git Shell. *
 
     mkdir <repo directory> && cd <repo directory>
     git init
-    git fast-import | cat <path to fast-import script created above>
+    git fast-import < <path to fast-import script created above>
 
 If all goes well, you should see progress indicators enumerating the changesets. When it's done, you should have an exact replicata of your SourceAnywhere tree in Git!
 

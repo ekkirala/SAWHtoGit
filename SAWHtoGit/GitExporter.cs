@@ -32,7 +32,7 @@ namespace SAWHtoGit
 	class GitExporter
 	{
 		FileStream ExportLog;
-		System.Text.Encoding Encoding = new System.Text.ASCIIEncoding();
+        System.Text.Encoding Encoding = new System.Text.ASCIIEncoding();
 		String Filename;
 		int LastFileSegment = 1;
 
@@ -88,16 +88,19 @@ namespace SAWHtoGit
 
 		public void WriteInlineFile(string filename, string code = "M", string mode = "100644")
 		{
-			using (FileStream fsSource = new FileStream(Program.WorkingDir + '\\' + filename.Replace('/','\\'), FileMode.Open, FileAccess.Read))
+            //Encode the file in ASCII. If file is encoded in any other encoding and checked into Dynamsoft, it will cause issues.
+			String fileName1 = "";
+            fileName1 = FileEncode.ConvertFileEncoding(filename, Encoding);
+            using (FileStream fsSource = new FileStream(fileName1.Replace('/','\\'), FileMode.Open, FileAccess.Read))
 			{
 				// Read the source file into a byte array. 
-				byte[] bytes = new byte[fsSource.Length];
+                byte[] bytes = new byte[fsSource.Length];
 				int numBytesToRead = (int)fsSource.Length;
 				int numBytesRead = 0;
 				while (numBytesToRead > 0)
 				{
 					// Read may return anything from 0 to numBytesToRead. 
-					int n = fsSource.Read(bytes, numBytesRead, numBytesToRead);
+                    int n = fsSource.Read(bytes, numBytesRead, numBytesToRead);
 
 					// Break when the end of the file is reached. 
 					if (n == 0)
@@ -120,7 +123,7 @@ namespace SAWHtoGit
 			WriteRawString(String.Format("commit refs/heads/master\n"));
 			WriteRawString(String.Format("mark :{0}\n", mark));
 			WriteRawString(String.Format("committer {0} {1} -0800\n", GetUserName(author), ConvertDateTimeToEpoch(date)));
-			WriteData(comment);
+            WriteData(comment);
 			if (lastMark != null) WriteRawString(String.Format("from :{0}\n", lastMark)); // Uncomment this if you're building multiple/diff import files //else WriteRawString("from refs/heads/master^0\n");
 		}
 
